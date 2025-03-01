@@ -17,6 +17,8 @@ import { Search } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
 import { DoctorSidebar } from "@/components/DoctorSidebar";
 import { doctorLogout } from "@/app/(main)/doctor-auth/authdoc.action";
+import type { Doctor } from "@/types/doctor";
+import SymptomSearchBar from "@/components/SymptomsSearchBar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -47,8 +49,38 @@ export default function RootLayout({
   const [userExists, setUserExists] = useState<boolean | null>(null);
   const [activeSection, setActiveSection] = useState("profile");
   const router = useRouter();
+  const doctorData1: Doctor = {
+    id: "1",
+    userId: "doc123",
+    name: "Mashoor Gulati",
+    imageUrl: "/doctor-image.jpg",
+    dob: "1980-05-15",
+    aadharNo: "1234-5678-9101",
+    licenceNo: "LIC12345",
+    contactno: "9876543210",
+    email: "mashooor@gulati.com",
+    createdAt: "2022-01-01",
+    departments: [
+      { deptId: "1", dept: { name: "Cardiology" } },
+      { deptId: "2", dept: { name: "Neurology" } },
+    ],
+  };
+
   const { id } = useParams();
-  const [userData, setUserData] = useState<PatientData | null>(null);
+  const [doctorData, setDoctorData] = useState<Doctor>();
+  useEffect(() => {
+    const fetchDoctorData = async () => {
+      try {
+        const response = await fetch(`/api/doctor/${id}`);
+        const data = await response.json();
+        console.log(data.user);
+        setDoctorData(data.user);
+      } catch (error) {
+        console.error("Error fetching doctor data:", error);
+      }
+    };
+    fetchDoctorData();
+  }, []);
 
   // useEffect(() => {
   //   const checkUser = async () => {
@@ -100,7 +132,7 @@ export default function RootLayout({
         <DoctorSidebar
           id={id}
           handleLogout={handleLogout}
-          userData={userData}
+          userData={doctorData}
         />
         <SidebarInset className="dark:bg-slate-950 relative overflow-hidden">
           <header className="flex h-16 shrink-0 items-center gap-2 pb-2">
@@ -109,7 +141,10 @@ export default function RootLayout({
                 <SidebarTrigger className="-ml-1" />
                 <Separator orientation="vertical" className="mr-2 h-4" />
               </div>
-              <SearchBar />
+              <div className="flex items-center w-full">
+                <SymptomSearchBar inputClassName="h-12" searchButtonClassName="h-12"></SymptomSearchBar>
+              </div>
+
               <DarkModeToggle />
             </div>
           </header>

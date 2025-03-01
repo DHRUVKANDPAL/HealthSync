@@ -17,6 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { PatientSidebar } from "@/components/PatientSidebar";
 import { Search } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
+import SymptomSearchBar from "@/components/SymptomsSearchBar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -109,7 +110,12 @@ export default function RootLayout({
                 <SidebarTrigger className="-ml-1" />
                 <Separator orientation="vertical" className="mr-2 h-4" />
               </div>
-              <SearchBar />
+              <div className="flex items-center w-full">
+                <SymptomSearchBar
+                  inputClassName="h-12"
+                  searchButtonClassName="h-12"
+                ></SymptomSearchBar>
+              </div>
               <DarkModeToggle />
             </div>
           </header>
