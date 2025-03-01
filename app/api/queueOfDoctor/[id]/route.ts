@@ -28,6 +28,7 @@ export async function GET(
     }
     perHourQueue[hourLabel].push(patient);
   });
+  console.log({perHourQueue,queue});
 
   return NextResponse.json({ perHourQueue,queue, status: 200 });
 }
