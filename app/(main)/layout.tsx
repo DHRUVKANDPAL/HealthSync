@@ -9,7 +9,7 @@ export default function RootLayout({
 }>) {
   return (
     <div className="min-h-screen">
-      <Header></Header>
+      {/* <Header></Header> */}
       {children}
       <Toaster richColors></Toaster>
     </div>

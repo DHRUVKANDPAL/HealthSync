@@ -9,7 +9,7 @@ import { SigninSchema } from "@/components/Signin";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
-export const signup = async (values: z.infer<typeof SignUpSchema>) => {
+export const signup = async (values: any) => {
   try {
     const existingpatient = await prisma.patient.findUnique({
       where: {
