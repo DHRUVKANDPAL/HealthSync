@@ -20,9 +20,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { curoAIResponse } from "@/lib/gemini";
+import { curoAIResponse, curoFlash } from "@/lib/gemini";
 import SidebarComponent from "./Sidebar";
 import MessageShimmer from "./MessageShimmer";
+
+import { readStreamableValue } from "ai/rsc";
+import { CardContent } from "@/components/ui/card";
+
+import MDEditor from "@uiw/react-md-editor";
 
 type Message = {
   role: string;
@@ -370,14 +375,14 @@ const renderBotResponse = (content: any) => {
     </div>
   );
 };
-
+type ModelType = "curo-beat" | "curo-flash";
 const CuroAI = () => {
   const [loading, setLoading] = React.useState(false);
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [input, setInput] = React.useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
-
+  const [selectedModel, setSelectedModel] = useState<ModelType>("curo-beat");
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -432,11 +437,49 @@ const CuroAI = () => {
     }
   };
 
+
+  const flashSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+
+    const newMessages = [...messages, { role: "user", content: input }];
+    setMessages(newMessages);
+    setLoading(true);
+
+    if (newMessages.length > 15) {
+      newMessages.splice(0, 6);
+      setMessages(newMessages);
+    }
+
+    const botMessageIndex = newMessages.length;
+    newMessages.push({ role: "bot", content: "" });
+    setMessages([...newMessages]);
+
+    try {
+      const response = await curoFlash(input,messages);
+      newMessages[botMessageIndex].content = response;
+      setMessages([...newMessages]);
+    } catch (error) {
+      console.error("Error generating bot response:", error);
+      if (newMessages[botMessageIndex]) {
+        newMessages[botMessageIndex].content =
+          "Sorry, I couldn't process your request. Please try again later.";
+      }
+      setMessages([...newMessages]);
+    } finally {
+      setLoading(false);
+      setInput("");
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50 to-slate-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       {/* Sidebar */}
 
-      <SidebarComponent />
+      <SidebarComponent
+        setSelectedModel={setSelectedModel}
+        selectedModel={selectedModel}
+      />
       {/* Main Content - With Left Padding for Sidebar on Desktop */}
       <div className="lg:pl-72 transition-all duration-300">
         {/* Header */}
@@ -456,7 +499,7 @@ const CuroAI = () => {
         </header>
 
         {/* Main Chat Area */}
-        <main className="max-w-5xl mx-auto px-4 md:px-6 pt-24 pb-32">
+       {selectedModel=="curo-beat" ?<main className="max-w-5xl mx-auto px-4 md:px-6 pt-24 pb-32">
           {/* Welcome Message */}
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -524,13 +567,57 @@ const CuroAI = () => {
             </div>
           )}
         </main>
+          :
+        <CardContent className="flex-grow overflow-hidden">
+          <ScrollArea className="h-full">
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={`mb-4 flex ${
+                  message.role === "user" ? "justify-end" : "justify-start"
+                }`}
+              >
+                {message.role === "bot" && (
+                  <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-full bg-red-500 p-2">
+                    <Bot className="h-5 w-5 text-white" />
+                  </div>
+                )}
+                <span
+                  data-color-mode="light"
+                  className={`inline-block max-w-[75%] rounded-lg p-2 pr-4 md:max-w-[70%] ${
+                    message.role === "user"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-black"
+                  }`}
+                >
+                  {/* {processText(message.content)} */}
+                  {message.role === "user" ? (
+                    message.content
+                  ) : (
+                    <MDEditor.Markdown
+                      source={message.content}
+                      style={{ background: "transparent" }}
+                    />
+                  )}
+                </span>
+                {message.role === "user" && (
+                  <div className="ml-2 mr-2 flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 p-2">
+                    <User className="h-5 w-5 text-white" />
+                  </div>
+                )}
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </ScrollArea>
+        </CardContent>
+        }
 
         {/* Input Area */}
         <div className="fixed bottom-0 left-0 right-0 lg:left-72 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-700 z-40">
           <div className="max-w-5xl mx-auto px-4 md:px-6 py-4">
             <form
               id="chat-form"
-              onSubmit={onSubmit}
+              onSubmit={selectedModel === "curo-beat" ? onSubmit : flashSubmit}
               className="flex items-center gap-2"
             >
               <Input

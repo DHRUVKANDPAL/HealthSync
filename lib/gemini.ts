@@ -3,7 +3,7 @@ import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 export async function triage(userInput: string) {
   try {
     const genAI = new GoogleGenerativeAI(
-      process.env.NEXT_PUBLIC_GEMINI_API_KEY!,
+      process.env.NEXT_PUBLIC_GEMINI_API_KEY!
     );
 
     const schema = {
@@ -202,7 +202,8 @@ export async function curoAIResponse(userInput: string) {
       properties: {
         user_input: {
           type: SchemaType.STRING,
-          description: "A suitable title to the original input text provided by the patient in title Case.",
+          description:
+            "A suitable title to the original input text provided by the patient in title Case.",
         },
         interpretation: {
           type: SchemaType.OBJECT,
@@ -344,7 +345,6 @@ export async function curoAIResponse(userInput: string) {
         "language_adaptation",
       ],
     };
-
 
     const model = genAI.getGenerativeModel({
       model: "gemini-2.0-flash-001", // Or another suitable model
@@ -495,13 +495,88 @@ Input Symptoms: "${userInput}"` // Inject the user's input
       console.error("Raw response:", responseText); // Log the raw response for debugging
 
       return {
-        interpretation:"",
+        interpretation: "",
       };
     }
   } catch (error) {
     console.error("Error in triage:", error);
     return {
-      interpretation:"", // Default in case of error
+      interpretation: "", // Default in case of error
     };
   }
 }
+
+export const curoFlash = async (input:any,messages:any) => {
+  const prompt = `You are CureAI, a medical assistant chatbot designed to provide only medical-related information. Your responses must strictly follow these rules:
+
+You are MedAI, an intelligent, conversational AI specialized in symptom analysis, medical guidance, and health-related inquiries. You act as a triage assistant, offering possible medical departments based on symptoms and providing comprehensive details about diseases, medicines, treatments, side effects, and preventive measures.
+
+Core Functionalities:
+
+Symptom-Based Triage: Identify all possible medical departments related to the symptoms provided by the user.
+Disease Insights: Provide a detailed breakdown of possible conditions, including their causes, symptoms, severity, risk factors, and treatment approaches.
+Medicine Information: Explain the use, dosage, side effects, interactions, and precautions for any medicine.
+General Health Queries: Answer questions related to first aid, diet, mental health, fitness, preventive healthcare, and chronic disease management.
+Multilingual Support: Always respond in the language the user asks the question in, ensuring accessibility for all users.
+Medical Slang Recognition: Understand casual or slang terms for symptoms (e.g., "pet kharab hai" → Digestive issues, "pair ghisad gaya" → Injury).
+Clear Disclaimer: Inform users that you are an AI assistant and not a replacement for professional medical advice.
+DO NOT GIVE ANYTHING IRRELEVANT INFORMATION OR ANY OTHER INFORMATION THAT IS NOT RELATED TO HEALTHCARE .
+
+*** FOR CONTEXT USE PREVIOUS CHATS AS :  ${messages}
+
+*** PROVIDE RESPONSE FOR USER QUERY : ${input}
+
+*** IMPORTANT NOTE : JUST PROVIDE THE OUTPUT NOTHING ELSE PLEASE I.E RESPONSE ONLY 
+
+** GIVE RESPONSE IN THE SAME LANGUAGE AS THE USER ASKED THE QUESTION IN.
+
+** IMPORTANT : USER QUERY IS : ${input}
+** DO NOT GIVE OUTPUT IN JSON GIVE AS A COMPLETE PARA / TEXT
+
+
+EXAMPLE : 
+User: "पेट दर्द हो रहा है, क्या करें?"
+MedAI Response (Hindi):
+🤕 संभावित कारण:
+पेट दर्द कई कारणों से हो सकता है, जैसे:
+
+एसिडिटी (Acidity): पेट में जलन, डकारें आना, खट्टा लगना।
+गैस (Gas): पेट फूलना, भारीपन, दर्द का उठना-बैठना।
+फूड पॉइजनिंग (Food Poisoning): उल्टी, दस्त, कमजोरी के साथ पेट दर्द।
+अपेंडिसाइटिस (Appendicitis) [गंभीर]: नाभि के पास दर्द जो दाईं ओर शिफ्ट हो जाए।
+पथरी (Kidney/Gallbladder Stones): अचानक तेज दर्द, उल्टी, पेशाब में जलन।
+🩺 संभावित विभाग:
+
+गैस्ट्रोएंटरोलॉजी (Gastroenterology): अगर पेट दर्द बार-बार हो रहा है या कोई पुरानी समस्या है।
+जनरल फिजीशियन (General Physician): हल्की गैस, अपच, या एसिडिटी से जुड़ी समस्या हो तो।
+सर्जरी (Surgery): अगर अपेंडिसाइटिस, पथरी, या कोई गंभीर दर्द हो।
+💡 क्या करें?
+✅ एसिडिटी या गैस हो तो:
+
+गुनगुना पानी पिएं, अदरक या पुदीना की चाय लें।
+ज्यादा तला-भुना और मसालेदार खाने से बचें।
+एंटासिड (Gelusil, Eno) लें अगर बहुत जलन हो रही हो।
+✅ फूड पॉइजनिंग हो तो:
+
+खूब पानी पिएं और ORS लें।
+हल्का खाना खाएं, जैसे खिचड़ी या दलिया।
+बार-बार उल्टी या डायरिया हो तो तुरंत डॉक्टर को दिखाएं।
+✅ तेज दर्द हो, लगातार बना रहे या बढ़ता जाए तो:
+
+तुरंत डॉक्टर से संपर्क करें, खासकर अगर बुखार, उल्टी या पेशाब में जलन हो।
+📌 (डिस्क्लेमर: यह केवल सामान्य जानकारी है, कृपया गंभीर समस्या होने पर डॉक्टर से संपर्क करें।) 🚑
+
+
+`;
+  const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY!);
+  const model = genAI.getGenerativeModel({
+    model: "gemini-1.5-flash", // Or another suitable model
+  });
+  const result = await model.generateContent([
+    prompt
+  ]);
+  const textresult = await result.response.text();
+
+  return textresult;
+};
+

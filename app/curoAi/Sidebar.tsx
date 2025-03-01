@@ -38,8 +38,8 @@ type ChatHistoryItem = {
   model: ModelType;
 };
 
-const SidebarComponent = () => {
-  const [selectedModel, setSelectedModel] = useState<ModelType>("curo-beat");
+const SidebarComponent = ({setSelectedModel,selectedModel}:any) => {
+  
 
   // Dummy chat history data
   const [chatHistory, setChatHistory] = useState<ChatHistoryItem[]>([
