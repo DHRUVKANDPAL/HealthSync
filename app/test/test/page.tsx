@@ -40,7 +40,7 @@ export default function DoctorQueuePage() {
     setLoading(true);
     try {
       const response = await fetch(
-        `/api/queueOfDoctor/cm6mi9rjv0001147lhoxf7scx`
+        `/api/queueOfDoctor/cm6mi9rjv0001147lhoxf7scx/cm6w1z82z001pvo7ijxowb0ag`
       );
       const data = await response.json();
 
