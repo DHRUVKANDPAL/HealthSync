@@ -16,6 +16,7 @@ import {
   Settings,
   Settings2,
   SquareTerminal,
+  Library,
   User,
 } from "lucide-react";
 
@@ -42,7 +43,7 @@ export function PatientSidebar({ ...props }: any) {
     user: {
       name: userData.name,
       email: userData.email,
-      avatar: "/avatars/shadcn.jpg",
+      avatar: userData.imageUrl||"/default-avatar.png",
     },
     navMain: [
       {
@@ -62,27 +63,15 @@ export function PatientSidebar({ ...props }: any) {
         icon: Calendar,
       },
       {
+        title: "Health Records",
+        url: `/patient-dash/${id}/healthrecords`,
+        icon: Library,
+      },
+      {
         title: "Settings",
         url: `/patient-dash/${id}/settings`,
         icon: Settings,
-        items: [
-          {
-            title: "General",
-            url: "#",
-          },
-          {
-            title: "Team",
-            url: "#",
-          },
-          {
-            title: "Billing",
-            url: "#",
-          },
-          {
-            title: "Limits",
-            url: "#",
-          },
-        ],
+        
       },
     ],
     navSecondary: [

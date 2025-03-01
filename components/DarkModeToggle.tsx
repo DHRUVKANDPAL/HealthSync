@@ -65,7 +65,7 @@ const DarkModeToggle: React.FC = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative z-50">
       <button
         onClick={toggleDropdown}
         className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 transition-all duration-300 shadow-md hover:shadow-lg"

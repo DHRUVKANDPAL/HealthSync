@@ -41,9 +41,9 @@ export function DoctorSidebar({ ...props }: any) {
   const { userData } = props;
   const data = {
     user: {
-      name: "Dr. Mashoor Gulati",
-      email: "mashooor@gulati.com",
-      avatar: "/avatars/shadcn.jpg",
+      name: userData?.name || "Mashoor Gulati",
+      email: userData?.email || "mashooor@gulati.com",
+      avatar: userData?.imgUrl || "/avatars/shadcn.jpg",
     },
     navMain: [
       {

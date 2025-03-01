@@ -10,6 +10,8 @@ import { usePathname } from "next/navigation";
 import { headers } from "next/headers";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Bot } from "lucide-react";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
@@ -159,6 +161,7 @@ export default function RootLayout({
           </div>
 
           {/* Main Content Container */}
+          
           <div className="relative z-10">{children}</div>
           <Toaster richColors></Toaster>
           <Analytics></Analytics>
