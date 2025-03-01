@@ -14,7 +14,7 @@ HealthSync is a comprehensive healthcare management platform that connects hospi
 - **Emergency Services**: Quick ambulance and blood bank availability.
 
 ## Installation & Setup
-To set up and run HealthSync locally, follow these steps:
+To set up and run HealthSync locally, follow these steps =>
 
 ### **Prerequisites**
 - Node.js (v16+ recommended)
