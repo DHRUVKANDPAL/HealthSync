@@ -21,9 +21,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { curoAIResponse } from "@/lib/gemini";
-import DarkModeToggle from "@/components/DarkModeToggle";
-import DoctorProfileShimmer from "@/components/DoctorProfileShimmer";
-import MessageLoadingShimmer from "./MessageShimmer";
+import SidebarComponent from "./Sidebar";
+import MessageShimmer from "./MessageShimmer";
 
 type Message = {
   role: string;
@@ -49,6 +48,7 @@ const LoadingDots = () => {
 
     return () => clearInterval(timer);
   }, []);
+
   return (
     <div className="space-y-4">
       {/* Loading Dots */}
@@ -115,7 +115,7 @@ const ResponseSection = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       className={cn(
-        "bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 backdrop-blur-sm",
+        "bg-white/90 dark:bg-slate-800/90 rounded-xl shadow-lg p-6 backdrop-blur-sm border border-slate-100 dark:border-slate-700",
         className
       )}
     >
@@ -192,7 +192,7 @@ const Message = ({ message, isLast }: any) => {
           CuroAI Assistant
         </div>
       </div>
-      <div className=" bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm p-6 rounded-xl shadow-lg">
+      <div className="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700">
         {isLast && !message.content ? (
           <LoadingDots />
         ) : (
@@ -260,7 +260,7 @@ const renderBotResponse = (content: any) => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-xl"
+              className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700/80"
             >
               <h3 className="font-medium text-violet-600 dark:text-violet-400 mb-2">
                 {remedy.name}
@@ -355,7 +355,7 @@ const renderBotResponse = (content: any) => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.1 }}
-              className="bg-gradient-to-tr from-slate-50 to-white dark:from-slate-700/50 dark:to-slate-800/50 p-4 rounded-xl shadow-sm"
+              className="bg-gradient-to-tr from-slate-50 to-white dark:from-slate-700/50 dark:to-slate-800/50 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/80"
             >
               <h3 className="font-medium text-violet-600 dark:text-violet-400 mb-2">
                 {dept.department}
@@ -423,7 +423,7 @@ const CuroAI = () => {
       console.error("Error generating bot response:", error);
       if (newMessages[botMessageIndex]) {
         newMessages[botMessageIndex].content =
-          "Error generating bot response. Please try again.";
+          "Sorry, I couldn't process your request. Please try again later.";
       }
       setMessages([...newMessages]);
     } finally {
@@ -434,75 +434,142 @@ const CuroAI = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50 to-slate-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-      {/* Header */}
-      <header className="fixed top-0 w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md z-50 border-b border-slate-200 dark:border-slate-700">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-500 to-fuchsia-500 flex items-center justify-center">
-              <Bot className="h-6 w-6 text-white" />
-            </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text text-transparent">
-              CuroAI
+      {/* Sidebar */}
+      <SidebarComponent />
+
+      {/* Main Content - With Left Padding for Sidebar on Desktop */}
+      <div className="lg:pl-72 transition-all duration-300">
+        {/* Header */}
+        <header className="fixed top-0 right-0 left-0 lg:left-72 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md z-40 border-b border-slate-200 dark:border-slate-700">
+          <div className="max-w-5xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
+            <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text text-transparent ml-12 lg:ml-0">
+              Health Assistant
             </h1>
-          </div>
-        </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="pt-24 pb-24 px-4 max-w-7xl mx-auto">
-        <ScrollArea className="h-full">
-          <div className="space-y-6">
-            {messages.map((message, index) => (
-              <Message
-                key={index}
-                message={message}
-                isLast={index === messages.length - 1}
-              />
-            ))}
-            <div ref={messagesEndRef} />
+            {/* Chat info - can be expanded with current chat details */}
+            <div className="hidden md:flex items-center gap-2">
+              <div className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-sm text-slate-600 dark:text-slate-300">
+                <span className="font-medium">Curo Beat</span>
+              </div>
+            </div>
           </div>
-        </ScrollArea>
-      </main>
+        </header>
 
-      {/* Footer Input */}
-      <footer className="fixed bottom-0 w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-700">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <form onSubmit={onSubmit} className="flex gap-4">
-            <Input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Type your health concern..."
-              className="flex-grow bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl shadow-sm focus:ring-2 focus:ring-violet-500 dark:focus:ring-violet-400"
-            />
-            <Button
-              type="submit"
-              disabled={loading}
-              className="bg-gradient-to-tr from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600 text-white rounded-xl px-6 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+        {/* Main Chat Area */}
+        <main className="max-w-5xl mx-auto px-4 md:px-6 pt-24 pb-32">
+          {/* Welcome Message */}
+          {messages.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="w-20 h-20 rounded-full bg-gradient-to-tr from-violet-500 to-fuchsia-500 flex items-center justify-center mb-6"
+              >
+                <Bot className="h-10 w-10 text-white" />
+              </motion.div>
+              <h2 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white mb-4">
+                Welcome to CuroAI Health Assistant
+              </h2>
+              <p className="text-slate-600 dark:text-slate-300 max-w-xl mb-8">
+                Describe your health concerns, symptoms, or questions, and I'll
+                provide personalized guidance, home remedies, and professional
+                advice.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl w-full">
+                {[
+                  "I have a persistent headache for 3 days",
+                  "What should I do for a mild fever?",
+                  "I'm experiencing lower back pain",
+                  "How can I manage seasonal allergies?",
+                ].map((suggestion, index) => (
+                  <Button
+                    key={index}
+                    variant="outline"
+                    className="justify-start border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+                    onClick={() => {
+                      setInput(suggestion);
+                      // Auto submit after a short delay
+                      setTimeout(() => {
+                        const form = document.getElementById("chat-form");
+                        if (form) {
+                          form.dispatchEvent(
+                            new Event("submit", {
+                              cancelable: true,
+                              bubbles: true,
+                            })
+                          );
+                        }
+                      }, 500);
+                    }}
+                  >
+                    <span className="truncate">{suggestion}</span>
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Chat Messages */}
+          {messages.length > 0 && (
+            <div className="space-y-6">
+              {messages.map((message, index) => (
+                <Message
+                  key={index}
+                  message={message}
+                  isLast={index === messages.length - 1}
+                />
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+          )}
+        </main>
+
+        {/* Input Area */}
+        <div className="fixed bottom-0 left-0 right-0 lg:left-72 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-700 z-40">
+          <div className="max-w-5xl mx-auto px-4 md:px-6 py-4">
+            <form
+              id="chat-form"
+              onSubmit={onSubmit}
+              className="flex items-center gap-2"
             >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <Send className="h-5 w-5" />
-              )}
-            </Button>
-          </form>
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Describe your symptoms or health concerns..."
+                className="flex-1 bg-white/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 focus-visible:ring-violet-500"
+                disabled={loading}
+              />
+              <Button
+                type="submit"
+                disabled={loading || !input.trim()}
+                className="bg-gradient-to-tr from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600"
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </form>
+            <div className="text-xs text-center mt-2 text-slate-500 dark:text-slate-400">
+              CuroAI provides general health information. Always consult a
+              healthcare professional for medical advice.
+            </div>
+          </div>
         </div>
-      </footer>
 
-      {/* Scroll to Top Button */}
-      <AnimatePresence>
-        {showScrollTop && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0 }}
-            onClick={scrollToTop}
-            className="fixed bottom-24 right-4 bg-gradient-to-tr from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600 text-white p-3 rounded-xl shadow-lg transition-all duration-200"
-          >
-            <ArrowUp className="h-5 w-5" />
-          </motion.button>
-        )}
-      </AnimatePresence>
+        {/* Scroll to top button */}
+        <AnimatePresence>
+          {showScrollTop && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="fixed bottom-20 right-4 p-2 rounded-full bg-violet-500 text-white shadow-lg z-50"
+              onClick={scrollToTop}
+            >
+              <ArrowUp className="h-5 w-5" />
+            </motion.button>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 };
