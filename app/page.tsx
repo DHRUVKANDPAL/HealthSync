@@ -18,6 +18,8 @@ import {
 import { ShineBorder } from "@/components/magicui/shine-border";
 import HowItWorks from "@/components/HowItWorks";
 import PricingSection from "@/components/PricingSection";
+import Link from "next/link";
+import { Bot } from "lucide-react";
 
 export default function Home() {
   const isMobile = useIsMobile();
@@ -151,6 +153,14 @@ export default function Home() {
     <main className="select-none ">
       <Header onSearchStateChange={setIsSearching} />
       {!isSearching && <MainContent />}
+      <div className="fixed bottom-5 right-5 z-50">
+        <Link
+          href="/curoAi"
+          className="flex items-center justify-center w-14 h-14 bg-indigo-600 rounded-full shadow-lg transition-all duration-300 ease-in-out hover:bg-indigo-700 hover:shadow-xl"
+        >
+          <Bot size={28} color="white" strokeWidth={2} />
+        </Link>
+      </div>
     </main>
   );
 }
