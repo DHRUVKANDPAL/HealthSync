@@ -123,7 +123,7 @@ const DoctorProfile = () => {
     contactno: doctor?.contactno || "Contact not available",
     departments: doctor?.departments || [],
   };
-  const router=useRouter();
+  const router = useRouter();
   const InfoCard = ({ icon: Icon, title, content }: any) => (
     <motion.div
       whileHover={{ scale: 1.02 }}
@@ -144,49 +144,7 @@ const DoctorProfile = () => {
   return (
     <>
       {/* <Header /> */}
-      <header className="sticky top-0 z-50 w-full border-b bg-[#1A202C] border-gray-800">
-        <div className="container flex h-16 items-center px-4 max-w-7xl mx-auto">
-          <div className="mr-8">
-            <Link href="/" className="flex items-center space-x-2">
-              <Logo/>
-            </Link>
-          </div>
-          <nav className="flex items-center space-x-6 text-sm font-medium flex-1">
-            <Link
-              href="/"
-              className="transition-colors hover:text-[#00E5B0] text-gray-200"
-            >
-              Home
-            </Link>
-            <Link
-              href="/about-us"
-              className="transition-colors hover:text-[#00E5B0] text-gray-200"
-            >
-              About Us
-            </Link>
-            <Link
-              href="/discuss"
-              className="transition-colors hover:text-[#00E5B0] text-gray-200"
-            >
-              Discuss
-            </Link>
-            <Link
-              href="/contact-us"
-              className="transition-colors hover:text-[#00E5B0] text-gray-200"
-            >
-              Contact Us
-            </Link>
-          </nav>
-          <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              className="text-gray-200 hover:text-[#00E5B0] hover:bg-gray-800"
-            >
-              Login
-            </Button>
-          </div>
-        </div>
-      </header>
+      <Header />
       <div className="min-h-screen bg-gray-50 dark:bg-[#1A202C] py-8">
         <div className="container mx-auto px-4 max-w-7xl space-y-8">
           {/* Header Section */}
@@ -371,7 +329,10 @@ const DoctorProfile = () => {
                     </Sheet>
 
                     {/* Desktop View - Direct Buttons */}
-                    <Button className="hidden sm:flex bg-primary text-primary-foreground hover:bg-primary/90 h-12 text-lg shadow-lg" onClick={handleOnlineBilling}>
+                    <Button
+                      className="hidden sm:flex bg-primary text-primary-foreground hover:bg-primary/90 h-12 text-lg shadow-lg"
+                      onClick={handleOnlineBilling}
+                    >
                       <Video className="mr-2 h-5 w-5" />
                       Book Online Consultation
                     </Button>
