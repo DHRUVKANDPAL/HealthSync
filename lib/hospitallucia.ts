@@ -31,6 +31,38 @@ declare module "lucia" {
 }
 
 
+export const verifyhospital = async () => {
+  const sessionId = cookies().get(hospitallucia.sessionCookieName)?.value || null;
+  if (!sessionId) {
+    return null;
+  }
+  const { session, user } = await hospitallucia.validateSession(sessionId);
+  try {
+    if (session && session.fresh) {
+      const sessionCookie = await hospitallucia.createSessionCookie(session.id);
+      cookies().set(
+        sessionCookie.name,
+        sessionCookie.value,
+        sessionCookie.attributes
+      );
+    }
+    if (!session) {
+      const sessionCookie = await hospitallucia.createBlankSessionCookie();
+      cookies().set(
+        sessionCookie.name,
+        sessionCookie.value,
+        sessionCookie.attributes
+      );
+    }
+  } catch (error) {}
+
+    
+    return {id:user?.id};
+
+};
+
+
+
 export const getHospital = async () => {
   const sessionId = cookies().get(hospitallucia.sessionCookieName)?.value || null;
   if (!sessionId) {

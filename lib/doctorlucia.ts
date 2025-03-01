@@ -103,3 +103,34 @@ export const verifyDoctorDetails = async () => {
   } catch (error) {}
     return {id:user?.id};
 };
+
+
+export const verifydoctor = async () => {
+  const sessionId = cookies().get(doctorlucia.sessionCookieName)?.value || null;
+  if (!sessionId) {
+    return null;
+  }
+  const { session, user } = await doctorlucia.validateSession(sessionId);
+  try {
+    if (session && session.fresh) {
+      const sessionCookie = await doctorlucia.createSessionCookie(session.id);
+      cookies().set(
+        sessionCookie.name,
+        sessionCookie.value,
+        sessionCookie.attributes
+      );
+    }
+    if (!session) {
+      const sessionCookie = await doctorlucia.createBlankSessionCookie();
+      cookies().set(
+        sessionCookie.name,
+        sessionCookie.value,
+        sessionCookie.attributes
+      );
+    }
+  } catch (error) {}
+
+    
+    return {id:user?.id};
+
+};
