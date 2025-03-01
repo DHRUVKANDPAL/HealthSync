@@ -226,9 +226,9 @@ export default function Page() {
     "details": ""
   });
 
-  const submitReport = async () => {
+  const submitReport = async (reportUrl: string) => {
     try {
-      const res = await fetch("https://report-generator-3moj.onrender.com/generate_main_report", {
+      const res = await fetch(reportUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -309,8 +309,8 @@ export default function Page() {
         </div>
         <button onClick={addAdvice} type="button" className="px-4 py-2 bg-blue-500 text-white rounded-md">add medication</button>
         <div>
-          <button onClick={submitReport} type="button" className="px-4 py-2 bg-blue-500 text-white rounded-md">generate current report</button>
-          <button onClick={submitReport} type="button" className="px-4 py-2 bg-blue-500 text-white rounded-md">generate past report</button>
+          <button onClick={() => {submitReport("https://report-generator-3moj.onrender.com/generate_main_report")}} type="button" className="px-4 py-2 bg-blue-500 text-white rounded-md">generate current report</button>
+          <button onClick={() => {submitReport("https://report-generator-3moj.onrender.com/generate_previous_reports")}} type="button" className="px-4 py-2 bg-blue-500 text-white rounded-md">generate past report</button>
         </div>
       </form>
 
